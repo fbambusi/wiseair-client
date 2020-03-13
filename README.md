@@ -14,6 +14,7 @@ The main files in this repository are:
 - WiseairClient.py: This python module is the bulk of the software. 
 - 01-hello-world.ipynb: A "hello world" Jupyter Notebook that shows the functionlities of WiseairClient. 
 - 02-hello-world.py: A  "hello world" Python script that shows the functionlities of WiseairClient. 
+- sampleData.csv: a short sample of the dataset, to give an immediate idea of the featured dimensions
 
 ## Setup
 
