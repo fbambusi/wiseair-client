@@ -21,12 +21,12 @@ The main files in this repository are:
 To use WiseairClient:
 
  1. Download Wiseair App: [here](https://play.google.com/store/apps/details?id=com.wiseair) the Google Play Store link, [here](https://apps.apple.com/it/app/wiseair/id1489703565?l=en&fbclid=IwAR3cegztyvSOKsc2cMU7msV5Lirz5XxA7ZKEV_uAmhrDd39CON5wHU7UmI4) the Apple App Store link
- 2. Open the App and register an account
- 3. Rename "clientCredentialsMock.csv" in "clientCredentials.csv" and fill it with your data: 
- "client_id","client_secret","user_email","user_password"
- YY,"XXX","YOUR_EMAIL","YOUR_PASSWORD"
- 4. You should have received a client id and a client secret with the invitation to this project: if this is not the case, ask [our IT](mailto:fulvio.bambusi@wiseair.it) .
- 5. Launch the "hello world" script: it will download the data gathered in the last week by one sensor, and store them in sampleData.csv
+ 2. Open the App and register an account.
+ 3. Visit [https://api.wiseair.it](https://api.wiseair.it) and login using the credentials of your Wiseair account.
+ 4. Click "create a new token", insert a name for the token and click "create". The token will appear. Copy it, you will need it in the next step.
+ 5. Rename "personalAccessTokenMock.csv" in "personalAccessToken.csv".
+ 6. Open the file with a text editor. Replace XXXXXXXX with your token, and save the file.
+ 8. Launch the "hello world" script: it will download the data gathered in the last week by one sensor, and store them in sampleData.csv
 
 ```
 `python3 02-hello-world.py`

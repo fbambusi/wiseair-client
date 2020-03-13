@@ -55,18 +55,15 @@ class WiseairClient:
         r = requests.post(url, data=json.dumps(data), headers=headers)
         return json.loads(r.text)["access_token"]
 
-    def __init__(self,pathToClientCredentials,baseUrl="https://api.wiseair.it"):
+    def __init__(self,pathToClientCredentials="personalAccessToken.csv",baseUrl="https://api.wiseair.it"):
+        
         with open(pathToClientCredentials,"r") as csvFile:
             dic=csv.DictReader(csvFile)
             for row in dic:
-                self.__clientId=row["client_id"]
-                self.__clientSecret=row["client_secret"]
-                self.__userEmail=row["user_email"]
-                self.__userPassword=row["user_password"]
+                token=row["personalAccessToken"]
+
         self.__baseUrl=baseUrl
-        self.__oldUrl="https://www.wiseair.it/backend-test/public"
-        self.__clientToken=self.__getClientToken(self.__clientId,self.__clientSecret)
-        self.__userToken=self.__getPersonalToken(self.__userEmail,self.__userPassword,self.__clientToken)
+        self.__userToken=token
 
     def __getIntervalBetweenLastTenMeasures(self,potId,fromDate,toDate):
         results=self.getDataOfPotByInterval(potId,fromDate,toDate)
