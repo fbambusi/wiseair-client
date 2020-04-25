@@ -98,6 +98,7 @@ class WiseairClient:
     def getDataOfPotByInterval(self,pot_id,fromDate,toDate):
         url=self.__baseUrl+"/api/measures-by-time-interval"
         data={"until_date":toDate,"from_date":fromDate,"pot_id":pot_id}
+        print(data)
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         headers["Authorization"]="Bearer {}".format(self.__userToken)
         r = requests.get(url, data=json.dumps(data), headers=headers)

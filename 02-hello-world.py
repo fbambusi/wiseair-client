@@ -12,7 +12,7 @@
 
 
 from WiseairClient import WiseairClient
-client=WiseairClient("clientCredentials.csv")
+client=WiseairClient()
 
 
 # In[2]:
