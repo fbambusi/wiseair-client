@@ -7,7 +7,7 @@ os.chdir("..")
 from WiseairClient import  WiseairUtils
 measures=pd.read_csv("examples/measures.csv")
 print(measures.head())
-measures=measures[measures.created_at>"2020-02-24 10:10:10"]
+measures=measures[measures.created_at>"2019-11-01 10:10:10"]
 
 def plotHistogramOfMeasures(measures):
 
@@ -20,7 +20,8 @@ def plotHistogramOfMeasures(measures):
     fig.show()
 
 #plotHistogramOfMeasures(measures)
-interestingLocations=[135,148,182,226]
+#interestingLocations=[135,148,182,226]
+interestingLocations=[135]
 
 condition=np.zeros(len(measures),dtype=np.int8)
 for locationId in interestingLocations:
