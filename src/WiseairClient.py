@@ -175,8 +175,37 @@ class WiseairUtils:
         data=pd.DataFrame(pollutionData)
         data["created_at"]=pd.to_datetime(data["created_at"])
         data.index=data["created_at"]
-        data.drop("created_at",axis=1,inplace=True)
+        #data.drop("created_at",axis=1,inplace=True)
         return data
 
+    FORMAT_STRING_WITH_HOURS= "%Y-%m-%dT%H:%M:%S"
+    def filterByDateAndLocations(self,pollutionData,beginningDate="2000-01-01T10:10:10",
+                                 endDate="2100-01-01T10:10:10",interestingLocations=[]):
+        condition=np.zeros(len(pollutionData),dtype=np.int8)
+        for locationId in interestingLocations:
+            condition = condition | (pollutionData.location_id == locationId)
+            #print(condition)
+        pollutionData = pollutionData[condition]
+        begD=datetime.datetime.strptime(beginningDate,"%Y-%m-%dT%H:%M:%S")
+        endD=datetime.datetime.strptime(endDate,"%Y-%m-%dT%H:%M:%S")
+        pollutionData = pollutionData[pollutionData.created_at > begD]
+        pollutionData = pollutionData[pollutionData.created_at < endD]
+        return pollutionData.groupby("location_id").resample(rule="4H").mean()
+
+    def getSummaryOfPeriod(self,pollutionData,beginningDate="2000-01-01T10:10:10",
+                                 endDate="2100-01-01T10:10:10"):
+        formatStringWithHour=WiseairUtils.FORMAT_STRING_WITH_HOURS
+        begD = datetime.datetime.strptime(beginningDate, formatStringWithHour)
+        endD = datetime.datetime.strptime(endDate,formatStringWithHour)
+        pollutionData = pollutionData[pollutionData.created_at > begD]
+        pollutionData = pollutionData[pollutionData.created_at < endD]
+        summary={}
+        quantities=["pm2p5","pm10"]
+        for quantity in quantities:
+            curr={}
+            curr["mean"]=pollutionData[quantity].mean()
+            curr["std"] = pollutionData[quantity].var()**0.5
+            summary[quantity]=curr
+        return summary
 
 

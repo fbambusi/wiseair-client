@@ -11,7 +11,7 @@
 # In[1]:
 
 
-from WiseairClient import WiseairClient
+from src.WiseairClient import WiseairClient
 client=WiseairClient()
 
 
@@ -33,7 +33,7 @@ data=client.getDataOfPotByInterval(potId,BEGIN_DATE,END_DATE)
 # In[4]:
 
 
-from WiseairClient import WiseairUtils
+from src.WiseairClient import WiseairUtils
 
 
 # In[5]:
