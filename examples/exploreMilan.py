@@ -68,16 +68,15 @@ for locationId in interestingLocations:
         outputRes=output_mod.fit(method="powell",disp=False)
         print(outputRes.summary())
         public_props = (name for name in dir(outputRes) if not name.startswith('_'))
-        #fig=outputRes.plot_components(legend_loc="lower right",figsize=(15,9))
 
-        fig.add_trace(go.Scatter(x=currMeasures.index.get_level_values(1), y=outputRes.cycle["smoothed"], name="cycle"))
-        fig.add_trace(go.Scatter(x=currMeasures.index.get_level_values(1), y=outputRes.trend["smoothed"], name="trend"))
-        fig.add_trace(go.Scatter(x=currMeasures.index.get_level_values(1), y=outputRes.predicted_state[0], name="predicted"))
+        # fig.add_trace(go.Scatter(x=currMeasures.index.get_level_values(1), y=outputRes.cycle["smoothed"], name="cycle"))
+        # fig.add_trace(go.Scatter(x=currMeasures.index.get_level_values(1), y=outputRes.trend["smoothed"], name="trend"))
+        # fig.add_trace(go.Scatter(x=currMeasures.index.get_level_values(1), y=outputRes.predicted_state[0], name="predicted"))
 
         fig.add_trace(
-        go.Scatter(x=currMeasures.index.get_level_values(1), y=currMeas.pm2p5, name="actual @ {}".format( locationNames.get(locationId)  ,locationId)))
-        fig.show()
-        fig = go.Figure()
+        go.Scatter(x=currMeasures.index.get_level_values(1), y=currMeas.voltage, name="actual @ {}".format( locationNames.get(locationId)  ,locationId)))
+fig.show()
+fig = go.Figure()
 
     # fig.add_trace(go.Scatter(x=currMeasures.index.get_level_values(1), y=currMeas.voltage, name="actual"))
 
