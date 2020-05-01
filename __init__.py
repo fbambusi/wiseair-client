@@ -1,2 +1,2 @@
-from WiseairClient.WiseairClient import WiseairClient
-from WiseairClient.WiseairClient import WiseairUtils
+from wiseair.WiseairClient import WiseairClient
+from wiseair.WiseairClient import WiseairUtils

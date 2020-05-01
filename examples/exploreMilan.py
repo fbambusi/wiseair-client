@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 # os.chdir("..")
-from WiseairClient.WiseairClient import WiseairUtils
+from wiseair.WiseairClient import WiseairUtils
 import statsmodels.api as sm
 import pprint
 
