@@ -26,10 +26,25 @@ To use WiseairClient:
  4. Click "create a new token", insert a name for the token and click "create". The token will appear. Copy it, you will need it in the next step.
  5. Rename "personalAccessTokenMock.csv" in "personalAccessToken.csv".
  6. Open the file with a text editor. Replace XXXXXXXX with your token, and save the file.
- 8. Launch the "hello world" script: it will download the data gathered in the last week by one sensor, and store them in sampleData.csv
+ 7. This is an example script to download some data and save them in .csv format. Remember to replace "ABSOLUTE_PATH_TO_CREDENTIALS_FILE" with the absolute path of the file createad at point 5.
 
 ```
-`python3 02-hello-world.py`
+from wiseair.WiseairClient import WiseairClient
+
+#===========================================================
+#replace "ABSOLUTE_PATH_TO_CREDENTIALS_FILE" with the absolute path of the file createad at point 5
+#===========================================================
+
+client=WiseairClient("ABSOLUTE_PATH_TO_CREDENTIALS_FILE")
+
+currentMeasures=client.getLiveAirQuality()
+potId=currentMeasures["data"][0]["pot_id"]
+BEGIN_DATE,END_DATE="2020-02-15","2020-03-11"
+data=client.getDataOfPotByInterval(potId,BEGIN_DATE,END_DATE)
+from wiseair.WiseairClient import WiseairUtils
+utils=WiseairUtils()
+data=utils.getPandasDataFrameFromDataOfSingleSensor(data)
+data.to_csv("sampleData.csv")
 ```
   ## Troubleshooting & Feedback
 
