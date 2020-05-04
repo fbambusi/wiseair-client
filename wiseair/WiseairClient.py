@@ -20,7 +20,10 @@ from datetime import timedelta
 
 
 class WiseairClient:
-
+    """
+    This class is used to access Wiseair's air quality data, providing methods to obtain them in JSON format.
+    This client wraps Wiseair API's, whose full documentation is available at https://www.wiseair.it/documentation.
+    """
     def __putJson(self, url, data):
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         headers["Authorization"] = "Bearer {}".format(self.__userToken)
@@ -55,7 +58,17 @@ class WiseairClient:
         return json.loads(r.text)["access_token"]
 
     def __init__(self, pathToClientCredentials="personalAccessToken.csv", baseUrl="https://api.wiseair.it"):
-
+        """
+        Authenticate into Wiseair backend, using client credentials.
+        Client credentials are stored in a file, an example of whose format can be found at
+        https://github.com/fbambusi/wiseair-client/blob/milan-analysis/personalAccessTokenMock.csv
+        To obtain the actual token, first of all register a free wiseair account by downloading Wiseair application
+        on App Store or Play Store.
+        Then, log in at http://api.wiseair.it/home and issue a new token. Copy the token into the .csv file and input
+        the absolute path of the file.
+        :param pathToClientCredentials:
+        :param baseUrl: the base URL of Wiseair backend.
+        """
         with open(pathToClientCredentials, "r") as csvFile:
             dic = csv.DictReader(csvFile)
             for row in dic:
@@ -97,6 +110,14 @@ class WiseairClient:
         return data
 
     def getDataOfPotByInterval(self, pot_id, fromDate, toDate):
+        """
+        Get all the data measured by a given Arianna during a given time interval.
+        The pot_id can be retrieved using the method getLiveAirQuality.
+        :param pot_id: the id of the Arianna
+        :param fromDate: the date of the first measure to take, in the format yyyy-mm-dd, eg 2020-02-15
+        :param toDate: the date of the last measure to take, in the format yyyy-mm-dd, eg 2020-02-15
+        :return: array of air quality measures
+        """
         url = self.__baseUrl + "/api/measures-by-time-interval"
         data = {"until_date": toDate, "from_date": fromDate, "pot_id": pot_id}
         print(data)
@@ -156,6 +177,14 @@ class WiseairClient:
         return response
 
     def getLiveAirQuality(self, latitude="45.458453", longitude="9.1782493", page=0):
+        """
+        Get the most recent values of air quality measured by Ariannas close to a given point.
+        Data are paginated.
+        :param latitude: the latitude of the point, in degrees and decimal
+        :param longitude: the longitude of the point, in degrees and decimal
+        :param page: the number of page
+        :return: Array of air quality measures.
+        """
         data = {
             "longitude": longitude,
             "latitude": latitude,
@@ -170,10 +199,18 @@ class WiseairClient:
 
 
 class WiseairUtils:
+    """
+    This class is used to filter and transform Wiseair's JSON data.
+    """
     def __init__(self):
         pass
 
     def getPandasDataFrameFromDataOfSingleSensor(self, pollutionData):
+        """
+        This function turns the data measured by a single sensor into a time-indexed Pandas DataFrame.
+        :param pollutionData: the JSON array of data, in the format returned by WiseirClient.getDataOfPotByInterval
+        :return: a time-indexed pandas dataframe containing the data
+        """
         data = pd.DataFrame(pollutionData)
         data["created_at"] = pd.to_datetime(data["created_at"])
         data.index = data["created_at"]
@@ -185,6 +222,14 @@ class WiseairUtils:
 
     def filterByDateAndLocations(self, pollutionData, beginningDate="2000-01-01T10:10:10",
                                  endDate="2100-01-01T10:10:10", interestingLocations=[]):
+        """
+        Keep only the 4h mean of measures taken at a given location, in a given period,  indexed by location.
+        :param pollutionData: the Pandas DataFrame of air quality measures.
+        :param beginningDate: the beginning of the period
+        :param endDate: the end of the period
+        :param interestingLocations: array of location ids
+        :return: the data taken in the given location and period
+        """
         condition = np.zeros(len(pollutionData), dtype=np.int8)
         for locationId in interestingLocations:
             condition = condition | (pollutionData.location_id == locationId)
