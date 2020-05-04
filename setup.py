@@ -6,7 +6,7 @@ setup(
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'A client to access and use Wiseair API',
   long_description = "A client to access and use Wiseair API. Wiseair measures air quality using hyperlocal,\
-   capillar networks of autonomous sensors, called Arianna. This client offers a convenient way to access the data.",
+   capillar networks of autonomous sensors, called Arianna. This client offers a convenient way to access the data: for installation and quickstart, see https://github.com/fbambusi/wiseair-client.",
   author = 'Fulvio Bambusi',
   author_email = 'fulvio.bambusi@wiseair.it',
   url = 'https://github.com/fbambusi/wiseair-client',
