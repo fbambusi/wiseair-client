@@ -10,6 +10,8 @@ from matplotlib import pyplot
 measures = pd.read_csv("examples/measures.csv")
 measuresArpa19 = pd.read_csv("examples/arpa_senato_2019.csv")
 measuresArpa20 = pd.read_csv("examples/arpa_senato_2020.csv")
+
+
 measuresArpa = measuresArpa19.append(measuresArpa20)
 print(measuresArpa.columns)
 measuresArpa.index = pd.to_datetime(measuresArpa["created_at"])
@@ -100,13 +102,24 @@ for locationId in interestingLocations:
         fig.add_trace(
             go.Scatter(x=currMeasures.index.get_level_values(1), y=currMeas.voltage,
                        name="actual @ {}".format(locationNames.get(locationId), locationId)))
-        fig.show()
-        fig = go.Figure()
-        # break
+        #fig.show()
+        #fig = go.Figure()
+        break
     # fig.add_trace(go.Scatter(x=currMeasures.index.get_level_values(1), y=currMeas.voltage, name="actual"))
 
-currYear = measuresArpa["2020-02-01":"2020-08-01"]
-lastYear = measuresArpa["2019-02-01":"2019-08-01"]
+currYear = measuresArpa["2020-02-01":"2020-04-01"]
+lastYear = measuresArpa["2019-02-01":"2019-04-01"]
+print("arepa is ")
+print(currYear)
+print(lastYear)
+
+print(len(lastYear.pm2p5))
+print(len(currYear.pm2p5))
+
+arpa=pd.DataFrame({"created_at":currYear.created_at[:58],"lastYear":list(lastYear.pm2p5)[:58],"currYear":list(currYear.pm2p5)[:58]})
+arpa.to_csv("fullArpa.csv")
+print(arpa)
+exit()
 
 wiseirAvg = wu.getPandasDataFrameFromDataOfSingleSensor(pollutionData=measures)
 wiseirAvg = wiseirAvg[wiseirAvg.location_id.isin(interestingLocations)].resample(rule="24H").mean()

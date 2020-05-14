@@ -24,6 +24,7 @@ class WiseairClient:
     This class is used to access Wiseair's air quality data, providing methods to obtain them in JSON format.
     This client wraps Wiseair API's, whose full documentation is available at https://www.wiseair.it/documentation.
     """
+
     def __putJson(self, url, data):
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         headers["Authorization"] = "Bearer {}".format(self.__userToken)
@@ -108,6 +109,32 @@ class WiseairClient:
         r = requests.get(url, headers=headers)
         data = json.loads(r.text)["data"]
         return data
+
+    def update_pot_sleeping_time(self, pot_id, interval_between_measures_in_seconds=3600, beginning_sleep_hour=23,
+                                 end_sleep_hour=1):
+        """
+        This function is used to change the pace of a given pot.
+        :param pot_id: the pot
+        :param interval_between_measures_in_seconds: the interval between the measures of a pot
+        :param beginning_sleep_hour: the hour of the day when the pot starts to sleep (min 22pm)
+        :param end_sleep_hour: the hour of the day when the pot wakes up (max 5am)
+        :return: the new state of the pot
+        """
+        request_body = {"interval_between_measures_in_seconds": interval_between_measures_in_seconds,
+                        "beginning_sleep_hour": beginning_sleep_hour, "end_sleep_hour": end_sleep_hour,
+                        "pot_id": pot_id}
+        return self.__postJson(self.__baseUrl + "/api/update-pot-sleep", request_body)
+
+    def get_pot_details(self, pot_id):
+        """
+        This function return all the details of a given Arianna: location, last measure and active tests,
+        as well as physical parameters
+        :param pot_id:
+        :return:
+        """
+        request_body = {"pot_id": pot_id}
+        return self.__getJson(self.__baseUrl + "/api/full-state-of-pot", request_body)
+    
 
     def getDataOfPotByInterval(self, pot_id, fromDate, toDate):
         """
@@ -202,6 +229,7 @@ class WiseairUtils:
     """
     This class is used to filter and transform Wiseair's JSON data.
     """
+
     def __init__(self):
         pass
 
@@ -254,10 +282,10 @@ class WiseairUtils:
             curr = {}
             curr["mean"] = pollutionData[quantity].mean()
             curr["std"] = pollutionData[quantity].var() ** 0.5
-            dailyMean=pollutionData.resample(rule="24H").mean()
-            dailyMeanTooMuch=len(dailyMean[dailyMean[quantity]>WiseairUtils.THRESHOLDS[quantity]["limit"]])
+            dailyMean = pollutionData.resample(rule="24H").mean()
+            dailyMeanTooMuch = len(dailyMean[dailyMean[quantity] > WiseairUtils.THRESHOLDS[quantity]["limit"]])
             dailyMeanOk = len(dailyMean[dailyMean[quantity] <= WiseairUtils.THRESHOLDS[quantity]["limit"]])
-            curr["excessDays"]=dailyMeanTooMuch
+            curr["excessDays"] = dailyMeanTooMuch
             curr["daysOk"] = dailyMeanOk
 
             summary[quantity] = curr
