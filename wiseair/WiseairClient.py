@@ -113,7 +113,7 @@ class WiseairClient:
     def update_pot_sleeping_time(self, pot_id, interval_between_measures_in_seconds=3600, beginning_sleep_hour=23,
                                  end_sleep_hour=1):
         """
-        This function is used to change the pace of a given pot.
+        This function is used to change the pace of a given pot. You should be an administrator to run this function.
         :param pot_id: the pot
         :param interval_between_measures_in_seconds: the interval between the measures of a pot
         :param beginning_sleep_hour: the hour of the day when the pot starts to sleep (min 22pm)
@@ -134,7 +134,6 @@ class WiseairClient:
         """
         request_body = {"pot_id": pot_id}
         return self.__getJson(self.__baseUrl + "/api/full-state-of-pot", request_body)
-    
 
     def getDataOfPotByInterval(self, pot_id, fromDate, toDate):
         """
@@ -154,6 +153,13 @@ class WiseairClient:
         return json.loads(r.text)
 
     def createPot(self, longitude, latitude):
+        """
+        Create a pot and locate it at a specific latitude and longitude. You should be an administrator to run this
+        function.
+        :param longitude:
+        :param latitude:
+        :return:
+        """
         data = {"latitude": latitude, "longitude": longitude, "pm2p5": -1, "pm10": -1}
         url = self.__baseUrl + "/api/create-pot"
         print(url)
@@ -162,6 +168,16 @@ class WiseairClient:
         return response
 
     def registerPot(self, activationCode, country, city, streetName, houseNumber, postalCode):
+        """
+        Activate a pot at a specific address.
+        :param activationCode: the activation code of the pot.
+        :param country:
+        :param city:
+        :param streetName:
+        :param houseNumber:
+        :param postalCode:
+        :return:
+        """
         data = {
             "activation_token": activationCode,
             "streetname": streetName,
@@ -196,6 +212,12 @@ class WiseairClient:
         return response
 
     def getStateOfPots(self, page=1):
+        """
+        Get basic information about all the pots in the infrastructure, such as address and last measure. Data are
+        paginated.
+        :param page:
+        :return:
+        """
         data = {
             "page": page,
         }
@@ -221,6 +243,46 @@ class WiseairClient:
             "page": page
         }
         url = self.__baseUrl + "/api/live-air-quality"
+        response = self.__getJson(url, data)
+        return response
+
+    def get_all_firmware_tests(self, page=1):
+        """
+        Get all firmware tests, paginated. You should be an administrator to run this function.
+        :param page: the page of the tests to get
+        :return:
+        """
+        data = {
+            "page": page
+        }
+        url = self.__baseUrl + "/api/all-tests"
+        response = self.__getJson(url, data)
+        return response
+
+    def get_firmware_test_details_by_id(self, firmware_test_id):
+        """
+        Get the details of a specific firmware test. You should be an administrator to run this function.
+        :param firmware_test_id:
+        :return:
+        """
+        data = {
+            "firmware_test_id": firmware_test_id
+        }
+        url = self.__baseUrl + "/api/state-of-test-by-id"
+        response = self.__getJson(url, data)
+        return response
+
+    def get_most_recent_test_by_firmware_version_id(self, firmware_version_id):
+        """
+        Get the details of the most recent test executed for a specific firmware version. You should be an
+        administrator to run this funciton
+        :param firmware_version_id: the firmware version to check
+        :return:
+        """
+        data = {
+            "firmware_version_id": firmware_version_id
+        }
+        url = self.__baseUrl + "/api/state-of-test"
         response = self.__getJson(url, data)
         return response
 
