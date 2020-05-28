@@ -308,6 +308,7 @@ class WiseairUtils:
         return data
 
     FORMAT_STRING_WITH_HOURS = "%Y-%m-%dT%H:%M:%S"
+    MEASURES_FORMAT_STRING = "%Y-%m-%d %H:%M:%S"
     THRESHOLDS = {"pm2p5": {"limit": 25}, "pm10": {"limit": 25}}
 
     def filterByDateAndLocations(self, pollutionData, beginningDate="2000-01-01T10:10:10",
@@ -352,3 +353,30 @@ class WiseairUtils:
 
             summary[quantity] = curr
         return summary
+
+    @staticmethod
+    def is_pot_alive(pot_with_attributes, last_measure_of_pot,current_moment=datetime.datetime.now()):
+        """
+        Check whether the last measure produced by a pot is recent enough to declare it alive
+        :param pot_with_attributes:
+        :param last_measure_of_pot:
+        :param current_moment:
+        :return:
+        """
+        seconds_elapsed_from_last_measure = (
+                current_moment - datetime.datetime.strptime(last_measure_of_pot["created_at"],
+                                                            WiseairUtils.MEASURES_FORMAT_STRING)).total_seconds()
+        if seconds_elapsed_from_last_measure < pot_with_attributes["interval_between_measures_in_seconds"]:
+            return True
+        minutes_from_beginning_of_day = current_moment.hour * 60 + current_moment.minute
+        minutes_of_beginning_of_sleep = pot_with_attributes["beginning_sleep_hour"] * 60
+        minutes_of_end_of_sleep = pot_with_attributes["end_sleep_hour"] * 60
+        if minutes_of_beginning_of_sleep > minutes_of_end_of_sleep:
+            minutes_of_end_of_sleep += 24 * 60
+            if minutes_from_beginning_of_day < minutes_of_beginning_of_sleep:
+                minutes_from_beginning_of_day += 24 * 60
+        if minutes_of_beginning_of_sleep < minutes_from_beginning_of_day < minutes_of_end_of_sleep:
+            return pot_with_attributes["interval_between_measures_in_seconds"]/60 + (
+                        minutes_from_beginning_of_day - minutes_of_beginning_of_sleep) > seconds_elapsed_from_last_measure/60
+        else:
+            return False
