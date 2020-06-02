@@ -25,19 +25,37 @@ class WiseairClient:
     This client wraps Wiseair API's, whose full documentation is available at https://www.wiseair.it/documentation.
     """
 
-    def __putJson(self, url, data):
+    def put_json(self, url, data):
+        """
+        General purpose authenticated PUT request
+        :param url:
+        :param data:
+        :return:
+        """
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         headers["Authorization"] = "Bearer {}".format(self.__userToken)
         r = requests.put(url, data=json.dumps(data), headers=headers)
         return r
 
-    def __postJson(self, url, data):
+    def post_json(self, url, data):
+        """
+        General purpose authenticated POST request
+        :param url:
+        :param data:
+        :return:
+        """
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         headers["Authorization"] = "Bearer {}".format(self.__userToken)
         r = requests.post(url, data=json.dumps(data), headers=headers)
         return json.loads(r.content.decode("utf-8"))
 
-    def __getJson(self, url, data):
+    def get_json(self, url, data):
+        """
+        General purpose authenticated GET request
+        :param url:
+        :param data:
+        :return:
+        """
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         headers["Authorization"] = "Bearer {}".format(self.__userToken)
         r = requests.get(url, data=json.dumps(data), headers=headers)
@@ -123,7 +141,7 @@ class WiseairClient:
         request_body = {"interval_between_measures_in_seconds": interval_between_measures_in_seconds,
                         "beginning_sleep_hour": beginning_sleep_hour, "end_sleep_hour": end_sleep_hour,
                         "pot_id": pot_id}
-        return self.__postJson(self.__baseUrl + "/api/update-pot-sleep", request_body)
+        return self.post_json(self.__baseUrl + "/api/update-pot-sleep", request_body)
 
     def get_pot_details(self, pot_id):
         """
@@ -133,7 +151,7 @@ class WiseairClient:
         :return:
         """
         request_body = {"pot_id": pot_id}
-        return self.__getJson(self.__baseUrl + "/api/full-state-of-pot", request_body)
+        return self.get_json(self.__baseUrl + "/api/full-state-of-pot", request_body)
 
     def getDataOfPotByInterval(self, pot_id, fromDate, toDate):
         """
@@ -164,7 +182,7 @@ class WiseairClient:
         url = self.__baseUrl + "/api/create-pot"
         print(url)
         print(data)
-        response = self.__postJson(url, data)
+        response = self.post_json(url, data)
         return response
 
     def registerPot(self, activationCode, country, city, streetName, houseNumber, postalCode):
@@ -186,7 +204,7 @@ class WiseairClient:
             "postalcode": postalCode
         }
         url = self.__baseUrl + "/api/activate-pot"
-        response = self.__putJson(url, data)
+        response = self.put_json(url, data)
         print(response)
         print(response.content)
 
@@ -203,12 +221,12 @@ class WiseairClient:
             "pm10SPS": pm10,
             "pm4SPS": pm4}
         url = self.__baseUrl + "/measures/createV2"
-        response = self.__postJson(url, data)
+        response = self.post_json(url, data)
         return response
 
     def getAllLocations(self):
         url = self.__baseUrl + "/api/get-all-locations"
-        response = self.__getJson(url, {})
+        response = self.get_json(url, {})
         return response
 
     def getStateOfPots(self, page=1):
@@ -222,7 +240,7 @@ class WiseairClient:
             "page": page,
         }
         url = self.__baseUrl + "/api/get-state-of-pots"
-        response = self.__getJson(url, data)
+        response = self.get_json(url, data)
         return response
 
     def getLiveAirQuality(self, latitude="45.458453", longitude="9.1782493", page=0):
@@ -243,7 +261,7 @@ class WiseairClient:
             "page": page
         }
         url = self.__baseUrl + "/api/live-air-quality"
-        response = self.__getJson(url, data)
+        response = self.get_json(url, data)
         return response
 
     def get_all_firmware_tests(self, page=1):
@@ -256,7 +274,7 @@ class WiseairClient:
             "page": page
         }
         url = self.__baseUrl + "/api/all-tests"
-        response = self.__getJson(url, data)
+        response = self.get_json(url, data)
         return response
 
     def get_firmware_test_details_by_id(self, firmware_test_id):
@@ -269,7 +287,7 @@ class WiseairClient:
             "firmware_test_id": firmware_test_id
         }
         url = self.__baseUrl + "/api/state-of-test-by-id"
-        response = self.__getJson(url, data)
+        response = self.get_json(url, data)
         return response
 
     def get_most_recent_test_by_firmware_version_id(self, firmware_version_id):
@@ -283,7 +301,7 @@ class WiseairClient:
             "firmware_version_id": firmware_version_id
         }
         url = self.__baseUrl + "/api/state-of-test"
-        response = self.__getJson(url, data)
+        response = self.get_json(url, data)
         return response
 
 
@@ -377,6 +395,7 @@ class WiseairUtils:
                 minutes_from_beginning_of_day += 24 * 60
         if minutes_of_beginning_of_sleep < minutes_from_beginning_of_day < minutes_of_end_of_sleep:
             return pot_with_attributes["interval_between_measures_in_seconds"]/60 + (
-                        minutes_from_beginning_of_day - minutes_of_beginning_of_sleep) > seconds_elapsed_from_last_measure/60
+                        minutes_from_beginning_of_day
+                        - minutes_of_beginning_of_sleep) > seconds_elapsed_from_last_measure/60
         else:
             return False
