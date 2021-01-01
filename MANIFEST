@@ -2,5 +2,6 @@
 setup.cfg
 setup.py
 test/testUtils.py
+wiseair/IdoClient.py
 wiseair/WiseairClient.py
 wiseair/__init__.py
