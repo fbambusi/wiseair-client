@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'wiseair',         # How you named your package folder (MyLib)
   packages = ['wiseair'],   # Chose the same as "name"
-  version = '0.2.1',      # Start with a small number and increase it with every change you make
+  version = '0.2.2',      # Start with a small number and increase it with every change you make
   license='MIT',        # Chose a license from here: https://help.github.com/articles/licensing-a-repository
   description = 'A client to access and use Wiseair API',
   long_description = "A client to access and use Wiseair API. Wiseair measures air quality using hyperlocal,\
@@ -15,8 +15,7 @@ setup(
   install_requires=[
         'pandas',
         'numpy',
-        "requests",
-        "urllib"
+        "requests"
       ],
   classifiers=[
     'Development Status :: 4 - Beta',      # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
