@@ -28,7 +28,7 @@ To use WiseairClient:
  6. Open the file with a text editor. Replace XXXXXXXX with your token, and save the file.
  7. This is an example script to download some data and save them in .csv format. Remember to replace "ABSOLUTE_PATH_TO_CREDENTIALS_FILE" with the absolute path of the file createad at point 5.
 
-```
+```python
 from wiseair.WiseairClient import WiseairClient
 
 #===========================================================
@@ -46,7 +46,13 @@ utils=WiseairUtils()
 data=utils.getPandasDataFrameFromDataOfSingleSensor(data)
 data.to_csv("sampleData.csv")
 ```
-  ## Troubleshooting & Feedback
+ 
+##IDO Client
+
+Wiseair has now released IDO, a platform to access insights and actionable information from our proprietary network of sensors. To access these new services, you will
+need to use the class IdoClient.
+ 
+ ## Troubleshooting & Feedback
 
 If you meet any problem, please [open an issue](https://gitlab.com/wiseair-group/wiseair-client/-/issues/new). If you have cool ideas for new functionalities or you simply want to share with us your opinion, contact us at [contact@wiseair.it](mailto:contact@wiseair.it).
 

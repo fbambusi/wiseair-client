@@ -3,21 +3,40 @@ import json
 import urllib
 
 
+class IdoUnauthorizedException(Exception):
+    """
+    The request is not authenticated.
+    """
+    pass
+
+
+class IdoForbiddenException(Exception):
+    """
+    Forbidden means that even with a valid authentication the request may fail.
+    """
+    pass
+
+
 class IdoClient(object):
+    """
+    A wrapper which allows users to query IDO backend using their credentials.
+    """
     app_client_id = None
     app_client_secret = None
     api_key = None
     base_url = None
     desired_resources = None
-
+    writable_resources = None
     stage = None
 
-    def __init__(self, app_client_id, app_client_secret, api_key, stage="prod", needs_auth=True, desired_resources=[]):
+    def __init__(self, app_client_id, app_client_secret, api_key, stage="prod", needs_auth=True, desired_resources=[],
+                 writable_resources=[]):
         self.app_client_secret = app_client_secret
         self.api_key = api_key
         self.app_client_id = app_client_id
         self.stage = stage
         self.desired_resources = desired_resources
+        self.writable_resources = writable_resources
         if stage == "prod":
             self.base_url = "https://apiv1.ido.wiseair-api.com"
         else:
@@ -31,11 +50,14 @@ class IdoClient(object):
         :return:
         """
         if self.stage == "prod":
-            TOKEN_ENDPOINT = "https://ido.auth.eu-central-1.amazoncognito.com/token"
+            TOKEN_ENDPOINT = "https://ido-api.auth.eu-central-1.amazoncognito.com/token"
         else:
             TOKEN_ENDPOINT = "https://ido-stage.auth.eu-central-1.amazoncognito.com/token"
 
-        scope = " ".join([f"{self.base_url}/{r}.read" for r in self.desired_resources])
+        scope = " ".join(
+            [f"{self.base_url}/{r}.read" for r in self.desired_resources] + [f"{self.base_url}/{r}.read" for r in
+                                                                             self.writable_resources])
+
         body = {
             'grant_type': 'client_credentials',
             'client_id': self.app_client_id,
@@ -44,8 +66,11 @@ class IdoClient(object):
         }
         response = requests.post(TOKEN_ENDPOINT, data=body)
         tok = json.loads(response.text)
-
-        self.id_token = tok["access_token"]
+        try:
+            self.id_token = tok["access_token"]
+        except KeyError:
+            raise IdoForbiddenException(
+                f"Could not get access token with the given credentials for the given scope {scope}")
 
     def _get_headers(self):
         headers = {
@@ -63,6 +88,10 @@ class IdoClient(object):
 
         resp = requests.get(url=url,
                             headers=self._get_headers())
+        if resp.status_code == 401:
+            raise IdoUnauthorizedException()
+        if resp.status_code == 403:
+            raise IdoForbiddenException(f"{url} could not be queried")
         return resp.content
 
     def authenticated_post(self, url, payload):
@@ -113,4 +142,11 @@ class IdoClient(object):
         """
         assert resource_name in self.desired_resources
         qps = urllib.parse.urlencode(query_parameters, doseq=False)
-        return json.loads(self.authenticated_get(f"{self.base_url}/{resource_name}?{qps}").decode("utf-8"))
+        url_1 = f"{self.base_url}/{resource_name}?{qps}"
+        try:
+            response = self.authenticated_get(url_1)
+            return json.loads(response.decode("utf-8"))
+        except IdoUnauthorizedException as e:
+            url_2 = f"{self.base_url}/{resource_name}/scoped/query?{qps}"
+            response = self.authenticated_get(url_2)
+            return json.loads(response.decode("utf-8"))
