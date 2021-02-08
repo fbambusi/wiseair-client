@@ -126,7 +126,7 @@ class IdoClient(object):
         return resp.content
 
 
-    def authenticated_delete(self, url, payload):
+    def authenticated_delete(self, url):
         """
         Perform a DELETE request, signing it with the internal bearer token
         :param url:
@@ -154,6 +154,34 @@ class IdoClient(object):
         :return:
         """
         resp = requests.get(url=url)
+        return resp.content
+
+    def simple_put(self, url, payload):
+        """
+        Perform a PUT request
+        :param url:
+        :return:
+        """
+        resp = requests.put(url=url, json=payload)
+        return resp.content
+
+    def simple_patch(self, url, payload):
+        """
+        Perform a PATCH request
+        :param url:
+        :return:
+        """
+        resp = requests.patch(url=url, json=payload)
+        return resp.content
+
+
+    def simple_delete(self, url,):
+        """
+        Perform a DELETE request
+        :param url:
+        :return:
+        """
+        resp = requests.delete(url=url)
         return resp.content
 
     def legacy_post(self, url, payload):
