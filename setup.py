@@ -10,7 +10,7 @@ setup(
   author = 'Fulvio Bambusi',
   author_email = 'fulvio.bambusi@wiseair.it',
   url = 'https://github.com/fbambusi/wiseair-client',
-  download_url = 'https://github.com/fbambusi/wiseair-client/archive/0.2.3.tar.gz',
+  download_url = 'https://github.com/fbambusi/wiseair-client/archive/0.2.6.tar.gz',
   keywords = ['AIR QUALITY', 'DATA ANALYSIS', 'WISEAIR', "API"],   # Keywords that define your package best
   install_requires=[
         'pandas',
