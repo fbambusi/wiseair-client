@@ -55,7 +55,7 @@ class IdoClient(object):
             TOKEN_ENDPOINT = "https://ido-stage.auth.eu-central-1.amazoncognito.com/token"
 
         scope = " ".join(
-            [f"{self.base_url}/{r}.read" for r in self.desired_resources] + [f"{self.base_url}/{r}.read" for r in
+            [f"{self.base_url}/{r}.read" for r in self.desired_resources] + [f"{self.base_url}/{r}.write" for r in
                                                                              self.writable_resources])
 
         body = {
@@ -103,6 +103,39 @@ class IdoClient(object):
         resp = requests.post(url=url, json=payload,
                              headers=self._get_headers())
         return resp.content
+
+
+    def authenticated_put(self, url, payload):
+        """
+        Perform a PUT request, signing it with the internal bearer token
+        :param url:
+        :return:
+        """
+        resp = requests.put(url=url, json=payload,
+                             headers=self._get_headers())
+        return resp.content
+
+    def authenticated_patch(self, url, payload):
+        """
+        Perform a PATCH request, signing it with the internal bearer token
+        :param url:
+        :return:
+        """
+        resp = requests.patch(url=url, json=payload,
+                             headers=self._get_headers())
+        return resp.content
+
+
+    def authenticated_delete(self, url, payload):
+        """
+        Perform a DELETE request, signing it with the internal bearer token
+        :param url:
+        :return:
+        """
+        resp = requests.delete(url=url,headers=self._get_headers())
+        return resp.content
+
+
 
     def simple_post(self, url, payload):
         """
